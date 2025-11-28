@@ -12,7 +12,7 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
  * "I was pressed!" and nothing.
  */
 
-bool tounguePress = false;
+bool tonguePress = false;
 bool winglift = false;
 void on_center_button()
 {
@@ -112,7 +112,7 @@ void initialize() {
 			pros::screen::print(TEXT_MEDIUM, 0, "X: %f", chassis.getPose().x);
 			pros::screen::print(TEXT_MEDIUM, 1, "Y: %f", chassis.getPose().y);
 			pros::screen::print(TEXT_MEDIUM, 2, "Theta: %f", chassis.getPose().theta);
-			pros::screen::print(TEXT_MEDIUM, 3, "tongue: %d", tounguePress);
+			pros::screen::print(TEXT_MEDIUM, 3, "tongue: %d", tonguePress);
 			pros::screen::print(TEXT_MEDIUM, 4, "lift: %d", winglift);
 
 			//pros::screen::print(TEXT_MEDIUM, 3, "IMU: %f", imu.get_heading());
@@ -196,6 +196,9 @@ void autonomous() {
 void toggleWing() //lift or lower intake
 {
 	winglift = !winglift;
+}
+void adjustWing()
+{
 	if (winglift)
 	{
 		wings.set_value(true);
@@ -208,14 +211,17 @@ void toggleWing() //lift or lower intake
 
 void toggleTongue() //lift or lower tongue
 {
-	tounguePress = !tounguePress;
-	if (tounguePress)
+	tonguePress = !tonguePress;
+	
+}
+void adjustTongue()
+{
+	if (tonguePress)
 	{
 		tongue.set_value(true);
 	}
 	else
 	{
-
 		tongue.set_value(false);
 	}
 }
@@ -261,6 +267,7 @@ void opcontrol() {
 		// Sets right motor voltage
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
 			intakeHighgoal();
+			winglift=false;
 		}
 		//reverse high goal
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
@@ -268,6 +275,10 @@ void opcontrol() {
 		}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
 			intakeMiddlegoal();
+		}
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+			intakeHighgoal();
+			winglift = true;
 		}
 		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)){
 			toggleTongue();
@@ -282,6 +293,7 @@ void opcontrol() {
 			Intake_High_mg.move(0);
 			Intake_Middle_mg.move(0);
 		}
+		adjustWing();
 		pros::delay(20);  
 		                             // Run for 20 ms then update
 	}
