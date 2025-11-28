@@ -13,7 +13,7 @@
 #define LEFT_MIDDLE_DRIVE -4
 #define LEFT_BACK_DRIVE -3
 
-#define RIGHT_FRONT_DRIVE 10
+#define RIGHT_FRONT_DRIVE 7
 #define RIGHT_MIDDLE_DRIVE 8
 #define RIGHT_BACK_DRIVE 9
 
@@ -24,8 +24,8 @@
 #define IntakeTopRoller -1
 #define IntakeLastWheel -5
 
-#define SCRAPE 'A' // change this
-#define WINGS 'G'
+#define TONGUE 'A' // change this
+#define WINGS 'B'
 
 inline MockIMU imu(IMU, 359.3 / 360.0);
 inline pros::MotorGroup left_mg({LEFT_FRONT_DRIVE, LEFT_MIDDLE_DRIVE, LEFT_BACK_DRIVE}, pros::MotorGearset::blue);
@@ -38,4 +38,5 @@ inline pros::Rotation vertical_odom(VERTICAL_ODOM);
 
 // pneumatics
 
-inline pros::adi::Pneumatics scrape(SCRAPE, false);
+inline pros::adi::Pneumatics tongue(TONGUE, false);
+inline pros::adi::Pneumatics wings(WINGS, false);

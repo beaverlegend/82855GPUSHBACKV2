@@ -11,6 +11,9 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
+
+bool tonguePress = false;
+bool winglift = false;
 void on_center_button()
 {
 	static bool pressed = false;
@@ -35,10 +38,10 @@ lemlib::Drivetrain drivetrain(&left_mg,					  // left motor group
 							  &right_mg,				  // right motor group
 							  11,						  // 12 inch track width
 							  lemlib::Omniwheel::NEW_325, // using new 3.25" omnis
-							  450,						  // drivetrain rpm is 450
+							  450, 						  // drivetrain rpm is 450
 							  2							  // horizontal drift is 2 (for now)
 );
-	::TrackingWheel vertical_tracking_wheel(&vertical_odom, lemlib::Omniwheel::NEW_325,0);
+lemlib::TrackingWheel vertical_tracking_wheel(&vertical_odom, lemlib::Omniwheel::NEW_325,0);
 lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
 							nullptr,				  // vertical tracking wheel 2, set to nullptr as we are using IMEs
 							nullptr,				  // horizontal tracking wheel 1
@@ -109,6 +112,8 @@ void initialize() {
 			pros::screen::print(TEXT_MEDIUM, 0, "X: %f", chassis.getPose().x);
 			pros::screen::print(TEXT_MEDIUM, 1, "Y: %f", chassis.getPose().y);
 			pros::screen::print(TEXT_MEDIUM, 2, "Theta: %f", chassis.getPose().theta);
+			pros::screen::print(TEXT_MEDIUM, 3, "tongue: %d", tonguePress);
+			pros::screen::print(TEXT_MEDIUM, 4, "lift: %d", winglift);
 
 			//pros::screen::print(TEXT_MEDIUM, 3, "IMU: %f", imu.get_heading());
 
@@ -169,9 +174,9 @@ void pidTurnTune(){
 	while (true)
 	{
 		chassis.turnToHeading(90, 1000);
-		pros::delay(2000);
+		pros::delay(5000);
 		chassis.turnToHeading(0, 1000);
-		pros::delay(2000);
+		pros::delay(5000);
 		// chassis.moveToPoint(0,48, 4000);
 		// pros::delay(4000);
 		// chassis.moveToPoint(0,0, 4000, {.forwards = false});
@@ -180,34 +185,70 @@ void pidTurnTune(){
 }
 
 void autonomous() {
-	pidforwardTune();
+	chassis.setPose(0, 0, 0);
+	pidTurnTune();
 }
 
 
 
 
+//pneumatics
+void toggleWing() //lift or lower intake
+{
+	winglift = !winglift;
+}
+void adjustWing()
+{
+	if (winglift)
+	{
+		wings.set_value(true);
+	}
+	else
+	{
+		wings.set_value(false);
+	}
+}
+
+void toggleTongue() //lift or lower tongue
+{
+	tonguePress = !tonguePress;
+	
+}
+void adjustTongue()
+{
+	if (tonguePress)
+	{
+		tongue.set_value(true);
+	}
+	else
+	{
+		tongue.set_value(false);
+	}
+}
+
 //intake FUNCTIONS
 void intakeHighgoal(){
-	Intake_High_mg.move(127);
-	
+	Intake_High_mg.move(-127);
 }
 
 void intakeMiddlegoal(){
 	Intake_Middle_mg.move(127);
-	
 }
 
 void IntakeReverse(){
-	Intake_High_mg.move(-127);
+	Intake_High_mg.move(127);
 }
-void IntakeStop(){
-	Intake_High_mg.move(0);
-	Intake_Middle_mg.move(0);
-}
-void IntakeSrore(){
-	Intake_Shooter.move(127);
-	Intake_Shooter_Beaver.move(60);
-}
+
+
+
+// void IntakeStop(){
+// 	Intake_High_mg.move(0);
+// 	Intake_Middle_mg.move(0);
+// }
+// void IntakeScore(){
+// 	Intake_Shooter.move(127);
+// 	Intake_Shooter_Beaver.move(60);
+// }
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -225,22 +266,34 @@ void opcontrol() {
 		            
 		// Sets right motor voltage
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-			Intake_High_mg.move(-127);
+			intakeHighgoal();
+			winglift=false;
 		}
 		//reverse high goal
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
-			Intake_High_mg.move(127);
+			IntakeReverse();
 		}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
-			Intake_Middle_mg.move(-127);
+			intakeMiddlegoal();
 		}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)){
-			IntakeSrore();
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+			intakeHighgoal();
+			winglift = true;
 		}
+		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)){
+			toggleTongue();
+		}
+		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+			toggleWing();
+		}
+		// else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)){
+		// 	IntakeScore();
+		// }
 		else{
 			Intake_High_mg.move(0);
 			Intake_Middle_mg.move(0);
 		}
+		adjustWing();
 		pros::delay(20);  
 		                             // Run for 20 ms then update
 	}
