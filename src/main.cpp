@@ -151,11 +151,60 @@ void competition_initialize() {}
  * from where it left off.
  */
 
+void toggleWing() // lift or lower intake
+{
+	winglift = !winglift;
+}
+void adjustWing()
+{
+	if (winglift)
+	{
+		wings.set_value(true);
+	}
+	else
+	{
+		wings.set_value(false);
+	}
+}
 
+void toggleTongue() // lift or lower tongue
+{
+	tonguePress = !tonguePress;
+}
+void adjustTongue()
+{
+	if (tonguePress)
+	{
+		tongue.set_value(true);
+	}
+	else
+	{
+		tongue.set_value(false);
+	}
+}
 
+// intake FUNCTIONS
+void intakeHighgoal()
+{
+	Intake_High_mg.move(-127);
+}
 
+void intakeMiddlegoal()
+{
+	Intake_Middle_mg.move(127);
+}
+void IntakeSlowReverse(){
+	Intake_High_mg.move(115);
+}
+void IntakeReverse()
+{
+	Intake_High_mg.move(127);
+}
 
-
+void intakeStop()
+{
+	Intake_High_mg.move(0);
+}
 
 //AUTON CODES
 
@@ -190,83 +239,67 @@ void redBottom(){
 	adjustWing();
 	//start
 	chassis.setPose(-49, -17, 100);
-	pros::delay(2000);
+	pros::delay(100);
 	//intake first 3
 	intakeHighgoal();
-	chassis.moveToPoint(-22, -23, 1000);
-	pros::delay(2000);
+	chassis.moveToPose(-9, -28,135, 2000, {.lead = 0.3, .maxSpeed = 40});
+	pros::delay(1200);
+	
+	tonguePress=true;
+	adjustTongue();
+
+	// chassis.moveToPoint(-15, -16, 2000, {.maxSpeed = 40});
+	// intakeStop();
+	pros::delay(1000);
+	
+	toggleTongue();
+	adjustTongue();	
 	
 	//score
-	chassis.turnToHeading(45, 1000);
-	pros::delay(2000);
-	chassis.moveToPoint(-8, -9, 1000);
-	IntakeReverse();
-	pros::delay(2000);
+	//chassis.turnToHeading(45, 1000);
+	pros::delay(200);
+	intakeStop();
+	chassis.moveToPose(-1, -7, 45, 2000, {.lead = 0.2, .maxSpeed = 70});
+	pros::delay(1000);
+	IntakeSlowReverse();
+	pros::delay(1750);
+	// chassis.moveToPose(-3, -10, 45, 1000, {.lead = 0.1, .maxSpeed = 10});
+	// pros::delay(4000);
+	intakeStop();
+	pros::delay(500);
+	// back
+	chassis.moveToPoint(-34, -50, 1000, {.forwards = false, .maxSpeed = 80});
+	pros::delay(1000);
+	chassis.turnToHeading(280, 1000);
+	pros::delay(1200);
+	tonguePress = true;
+	adjustTongue();
+	pros::delay(500);
+	intakeHighgoal();
+	chassis.moveToPose(-70, -52, 280, 3000, {.forwards = true, .maxSpeed = 60});
+	pros::delay(1000);
+	intakeStop();
+	chassis.moveToPoint(-18, -52, 2000, {.forwards = false, .maxSpeed = 60});
+	winglift = false;
+	adjustWing();
+	intakeHighgoal();
+	
+
+	//matchload
+
 
 
 }
 
 void autonomous() {
-<<<<<<< HEAD
-	chassis.setPose(0, 0, 0);
-	pidforwardTune();
-=======
-	redBottom();
 
-	
-	// pidTurnTune();
->>>>>>> db3d3edfe6a76c19b50f7eb4a9dc8d7f6030bb63
+	redBottom();
 }
 
 
 
 
 //pneumatics
-void toggleWing() //lift or lower intake
-{
-	winglift = !winglift;
-}
-void adjustWing()
-{
-	if (winglift)
-	{
-		wings.set_value(true);
-	}
-	else
-	{
-		wings.set_value(false);
-	}
-}
-
-void toggleTongue() //lift or lower tongue
-{
-	tonguePress = !tonguePress;
-	
-}
-void adjustTongue()
-{
-	if (tonguePress)
-	{
-		tongue.set_value(true);
-	}
-	else
-	{
-		tongue.set_value(false);
-	}
-}
-
-//intake FUNCTIONS
-void intakeHighgoal(){
-	Intake_High_mg.move(-127);
-}
-
-void intakeMiddlegoal(){
-	Intake_Middle_mg.move(127);
-}
-
-void IntakeReverse(){
-	Intake_High_mg.move(127);
-}
 
 
 
@@ -305,7 +338,7 @@ void opcontrol() {
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
 			intakeMiddlegoal();
 		}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
 			intakeHighgoal();
 			winglift = true;
 		}
@@ -322,6 +355,7 @@ void opcontrol() {
 			Intake_High_mg.move(0);
 			Intake_Middle_mg.move(0);
 		}
+		adjustTongue();
 		adjustWing();
 		pros::delay(20);  
 		                             // Run for 20 ms then update
