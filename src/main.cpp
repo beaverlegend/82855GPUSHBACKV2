@@ -194,7 +194,7 @@ void intakeMiddlegoal()
 	Intake_Middle_mg.move(127);
 }
 void IntakeSlowReverse(){
-	Intake_High_mg.move(115);
+	Intake_High_mg.move(120);
 }
 void IntakeReverse()
 {
@@ -252,21 +252,22 @@ void redBottom(){
 	// intakeStop();
 	pros::delay(1000);
 	
-	toggleTongue();
-	adjustTongue();	
 	
 	//score
 	//chassis.turnToHeading(45, 1000);
 	pros::delay(200);
 	intakeStop();
 	chassis.moveToPose(-1, -7, 45, 2000, {.lead = 0.2, .maxSpeed = 70});
-	pros::delay(1000);
+	toggleTongue();
+	adjustTongue();	
+	pros::delay(800);
 	IntakeSlowReverse();
-	pros::delay(1750);
+	pros::delay(1050);
 	// chassis.moveToPose(-3, -10, 45, 1000, {.lead = 0.1, .maxSpeed = 10});
 	// pros::delay(4000);
 	intakeStop();
 	pros::delay(500);
+
 	// back
 	chassis.moveToPoint(-34, -50, 1000, {.forwards = false, .maxSpeed = 80});
 	pros::delay(1000);
@@ -276,10 +277,15 @@ void redBottom(){
 	adjustTongue();
 	pros::delay(500);
 	intakeHighgoal();
-	chassis.moveToPose(-70, -52, 280, 3000, {.forwards = true, .maxSpeed = 60});
-	pros::delay(1000);
+	chassis.moveToPose(-72, -52, 280, 3000, {.forwards = true, .maxSpeed = 60});
+	pros::delay(3000);
 	intakeStop();
-	chassis.moveToPoint(-18, -52, 2000, {.forwards = false, .maxSpeed = 60});
+	pros::delay(500);
+	IntakeReverse();
+	pros::delay(200);
+	intakeStop();
+	pros::delay(500);
+	chassis.moveToPoint(-14, -52, 2000, {.forwards = false, .maxSpeed = 60});
 	winglift = false;
 	adjustWing();
 	intakeHighgoal();
