@@ -242,7 +242,7 @@ void redBottom(){
 	pros::delay(100);
 	//intake first 3
 	intakeHighgoal();
-	chassis.moveToPose(-9, -28,135, 2000, {.lead = 0.3, .maxSpeed = 40});
+	chassis.moveToPose(-9, -28,135, 2000, {.lead = 0.1, .maxSpeed = 40});
 	pros::delay(1200);
 	
 	tonguePress=true;
