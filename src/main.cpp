@@ -171,6 +171,7 @@ void pidforwardTune()
 	}
 }
 void pidTurnTune(){
+	chassis.setPose(0, 0, 0);
 	while (true)
 	{
 		chassis.turnToHeading(90, 1000);
@@ -184,9 +185,37 @@ void pidTurnTune(){
 	}
 }
 
+void redBottom(){
+	winglift=true;
+	adjustWing();
+	//start
+	chassis.setPose(-49, -17, 100);
+	pros::delay(2000);
+	//intake first 3
+	intakeHighgoal();
+	chassis.moveToPoint(-22, -23, 1000);
+	pros::delay(2000);
+	
+	//score
+	chassis.turnToHeading(45, 1000);
+	pros::delay(2000);
+	chassis.moveToPoint(-8, -9, 1000);
+	IntakeReverse();
+	pros::delay(2000);
+
+
+}
+
 void autonomous() {
+<<<<<<< HEAD
 	chassis.setPose(0, 0, 0);
 	pidforwardTune();
+=======
+	redBottom();
+
+	
+	// pidTurnTune();
+>>>>>>> db3d3edfe6a76c19b50f7eb4a9dc8d7f6030bb63
 }
 
 
