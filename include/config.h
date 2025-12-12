@@ -13,12 +13,12 @@
 #define LEFT_MIDDLE_DRIVE -4
 #define LEFT_BACK_DRIVE -3
 
-#define RIGHT_FRONT_DRIVE 7
+#define RIGHT_FRONT_DRIVE 7 
 #define RIGHT_MIDDLE_DRIVE 8
 #define RIGHT_BACK_DRIVE 9
 
 #define VERTICAL_ODOM -10
-#define IMU 16
+#define IMU 17
 
 
 #define IntakeTopRoller -1
@@ -33,7 +33,7 @@
 #define DIST_LEFT 13
 #define DIST_RIGHT 14
 
-inline MockIMU imu(IMU, 359.3 / 360.0);
+inline MockIMU imu(IMU, 359.8 / 360.0);
 inline pros::MotorGroup left_mg({LEFT_FRONT_DRIVE, LEFT_MIDDLE_DRIVE, LEFT_BACK_DRIVE}, pros::MotorGearset::blue);
 inline pros::MotorGroup right_mg({RIGHT_FRONT_DRIVE, RIGHT_MIDDLE_DRIVE, RIGHT_BACK_DRIVE}, pros::MotorGearset::blue);
 inline pros::MotorGroup Intake_High_mg({IntakeTopRoller, IntakeLastWheel});

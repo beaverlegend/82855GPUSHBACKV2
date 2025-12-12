@@ -113,14 +113,15 @@ void on_center_button()
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-lemlib::Drivetrain drivetrain(&left_mg,					  // left motor group
+double scale = 20.6/24;
+ lemlib::Drivetrain drivetrain(&left_mg,					  // left motor group
 							  &right_mg,				  // right motor group
 							  11,						  // 12 inch track width
 							  lemlib::Omniwheel::NEW_325, // using new 3.25" omnis
 							  450, 						  // drivetrain rpm is 450
 							  2							  // horizontal drift is 2 (for now)
 );
-lemlib::TrackingWheel vertical_tracking_wheel(&vertical_odom, lemlib::Omniwheel::NEW_325,0);
+lemlib::TrackingWheel vertical_tracking_wheel(&vertical_odom, -scale*lemlib::Omniwheel::NEW_325,0);
 lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
 							nullptr,				  // vertical tracking wheel 2, set to nullptr as we are using IMEs
 							nullptr,				  // horizontal tracking wheel 1
@@ -129,21 +130,21 @@ lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel
 );
 
 // lateral PID controller
-lemlib::ControllerSettings lateral_controller(4.8,   // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(5,   // proportional gain (kP)
 											  0,   // integral gain (kI)
-											  22.3,  // derivative gain (kD)
+											  32.0,  // derivative gain (kD)
 											  0,   // anti windup
 											  0,   // small error range, in inches
 											  100, // small error range timeout, in milliseconds
 											  3,   // large error range, in inches
 											  500, // large error range timeout, in milliseconds
 											  15   // maximum acceleration (slew)
-);
+); 
 
 // angular PID controller
-lemlib::ControllerSettings angular_controller(5.8, // proportional gain (kP)3.2  5.8
+lemlib::ControllerSettings angular_controller(5, // proportional gain (kP)3.2  5.8
 											  0,   // integral gain (kI)
-											  39.5,  // derivative gain (kD)28 39.5
+											  43.5,  // derivative gain (kD)28 39.5
 											  0,   // anti windup
 											  0,   // small error range, in degrees
 											  0,   // small error range timeout, in milliseconds
@@ -337,61 +338,62 @@ void initialize() {
 	pros::Task screen_task([&]()
 						   {
         while (true) {
-			std::vector<Particle> local;
-			particles_mutex.take(TIMEOUT_MAX);
-			local = particles_snapshot;
-			particles_mutex.give();
-			// --- Text debug on the left side ---
-            // Clear text area with black
-            pros::screen::set_pen(0x000000); // black
-            pros::screen::fill_rect(0, 0, 200, 80);
+			// std::vector<Particle> local;
+			// particles_mutex.take(TIMEOUT_MAX);
+			// local = particles_snapshot;
+			// particles_mutex.give();
+			// // --- Text debug on the left side ---
+            // // Clear text area with black
+            // pros::screen::set_pen(0x000000); // black
+            // pros::screen::fill_rect(0, 0, 200, 80);
 
-            auto pose = chassis.getPose();
+            // auto pose = chassis.getPose();
 
             // Draw text in white
             pros::screen::set_pen(0xFFFFFF); // white
-            pros::screen::print(TEXT_MEDIUM, 0, "X: %.2f", pose.x);
-            pros::screen::print(TEXT_MEDIUM, 1, "Y: %.2f", pose.y);
-            pros::screen::print(TEXT_MEDIUM, 2, "Th: %.2f", pose.theta);
+            pros::screen::print(TEXT_MEDIUM, 0, "X: %.2f", chassis.getPose().x);
+            pros::screen::print(TEXT_MEDIUM, 1, "Y: %.2f", chassis.getPose().y);
+            pros::screen::print(TEXT_MEDIUM, 2, "Th: %.2f", chassis.getPose().theta);
 			pros::screen::print(TEXT_MEDIUM, 3, "wing: %d", wingLift);
 			pros::screen::print(TEXT_MEDIUM, 4, "scraper: %d", tonguePress);
 			pros::screen::print(TEXT_MEDIUM, 5, "index: %d", intakeLift);
+			pros::screen::print(TEXT_MEDIUM, 6, "test");
 			// pros::screen::print(TEXT_MEDIUM, 3, "first: %.2f", (local.empty())? -10000.00 : local[0].x);
 			// pros::screen::print(TEXT_MEDIUM, 4, "init: %d", particles_snapshot.size());
 
-            // --- Clear field area ---
-            pros::screen::set_pen(0x000000); // black
-            pros::screen::fill_rect(
-                FIELD_X, FIELD_Y,
-                FIELD_X + FIELD_SIZE,
-                FIELD_Y + FIELD_SIZE
-            );
+            // // --- Clear field area ---
+            // pros::screen::set_pen(0x000000); // black
+            // pros::screen::fill_rect(
+            //     FIELD_X, FIELD_Y,
+            //     FIELD_X + FIELD_SIZE,
+            //     FIELD_Y + FIELD_SIZE
+            // );
 
-            // Draw field border in white
-            pros::screen::set_pen(0xFFFFFF); // white
-            pros::screen::draw_rect(
-                FIELD_X, FIELD_Y,
-                FIELD_X + FIELD_SIZE,
-                FIELD_Y + FIELD_SIZE
-            );
+            // // Draw field border in white
+            // pros::screen::set_pen(0xFFFFFF); // white
+            // pros::screen::draw_rect(
+            //     FIELD_X, FIELD_Y,
+            //     FIELD_X + FIELD_SIZE,
+            //     FIELD_Y + FIELD_SIZE
+            // );
 
-			pros::screen::set_pen(0x0000FF);
-			for (const auto &p : local) {
-				int sx = worldToScreenX(p.x);
-				int sy = worldToScreenY(p.y);
-				if (sx >= FIELD_X && sx < FIELD_X + FIELD_SIZE &&
-					sy >= FIELD_Y && sy < FIELD_Y + FIELD_SIZE) {
-					pros::screen::fill_circle(sx, sy, 1);
-				}
-			}
+			// pros::screen::set_pen(0x0000FF);
+			// for (const auto &p : local) {
+			// 	int sx = worldToScreenX(p.x);
+			// 	int sy = worldToScreenY(p.y);
+			// 	if (sx >= FIELD_X && sx < FIELD_X + FIELD_SIZE &&
+			// 		sy >= FIELD_Y && sy < FIELD_Y + FIELD_SIZE) {
+			// 		pros::screen::fill_circle(sx, sy, 1);
+			// 	}
+			// }
 
-            // --- Draw estimated robot pose as a small red circle ---
-            int rx = worldToScreenX(pose.x);
-            int ry = worldToScreenY(pose.y);
-            pros::screen::set_pen(0xFF0000); // red
-            pros::screen::fill_circle(rx, ry, 4); // radius 3px
+            // // --- Draw estimated robot pose as a small red circle ---
+            // int rx = worldToScreenX(pose.x);
+            // int ry = worldToScreenY(pose.y);
+            // pros::screen::set_pen(0xFF0000); // red
+            // pros::screen::fill_circle(rx, ry, 4); // radius 3px
 
-            pros::delay(30);
+            pros::delay(20);
         } });
 }
 
@@ -443,6 +445,10 @@ void adjustTongue()
 	tongue.set_value(tonguePress);
 }
 
+void toggleIntake()
+{
+	intakeLift=!intakeLift;
+}
 void adjustIntake()
 {
 	intakeFinal.set_value(intakeLift);
@@ -463,7 +469,7 @@ void intakeMiddlegoal()
 	adjustIntake();
 }
 void IntakeSlowReverse(){
-	Intake_High_mg.move(120);
+	Intake_High_mg.move(100);
 }
 void IntakeReverse()
 {
@@ -499,9 +505,9 @@ void pidTurnTune(){
 	while (true)
 	{
 		chassis.turnToHeading(90, 1000);
-		pros::delay(2000);
+		pros::delay(4000);
 		chassis.turnToHeading(0, 1000);
-		pros::delay(2000);
+		pros::delay(4000);
 		// chassis.moveToPoint(0,48, 4000);
 		// pros::delay(4000);
 		// chassis.moveToPoint(0,0, 4000, {.forwards = false});
@@ -510,13 +516,13 @@ void pidTurnTune(){
 }
 
 void redBottom(){
-	adjustWing();
+	// adjustWing();
 	//start
 	chassis.setPose(-49, -17, 100);
 	pros::delay(100);
 	//intake first 3
 	intakeIndex();
-	chassis.moveToPose(-9, -28, 135, 2000, {.lead = 0.1, .maxSpeed = 40});
+	chassis.moveToPose(-15, -25, 135, 2000, {.lead = 0.1, .maxSpeed = 40});
 	pros::delay(1200);
 	
 	tonguePress=true;
@@ -530,23 +536,24 @@ void redBottom(){
 	//score
 	//chassis.turnToHeading(45, 1000);
 	pros::delay(200);
-	intakeStop();
-	chassis.moveToPose(-1, -7, 45, 2000, {.lead = 0.2, .maxSpeed = 70});
+	chassis.moveToPose(-8.5, -10.5, 45, 2000, {.lead = 0.2, .maxSpeed = 70});
 	toggleTongue();
 	adjustTongue();	
+	pros::delay(400);
+	intakeStop();
 	pros::delay(800);
-	IntakeSlowReverse();
-	pros::delay(1050);
+	IntakeReverse();
+	pros::delay(2050);
 	// chassis.moveToPose(-3, -10, 45, 1000, {.lead = 0.1, .maxSpeed = 10});
 	// pros::delay(4000);
 	intakeStop();
-	pros::delay(500);
+	pros::delay(2000);
 
 	// back
-	chassis.moveToPoint(-34, -50, 1000, {.forwards = false, .maxSpeed = 80});
+	chassis.moveToPoint(-48, -52, 1000, {.forwards = false, .maxSpeed = 80});
 	pros::delay(1000);
-	chassis.turnToHeading(280, 1000);
-	pros::delay(1200);
+	chassis.turnToHeading(270, 1000);
+	pros::delay(120000); //super long delay because I need to fix everything before this
 	tonguePress = true;
 	adjustTongue();
 	pros::delay(500);
@@ -572,7 +579,8 @@ void redBottom(){
 }
 
 void autonomous() {
-
+	chassis.setPose(0, 0, 0);
+	// pidTurnTune();
 	redBottom();
 }
 
@@ -598,9 +606,9 @@ void opcontrol() {
 
 
 	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
+		// pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
+		//                  (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
+		//                  (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
 
 		// Arcade control scheme
 		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
@@ -625,8 +633,11 @@ void opcontrol() {
 			intakeHighgoal();
 			intakeLift = true;
 		}
-		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT )){
+		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A )){
 			toggleTongue();
+		}
+		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT )){
+			toggleIntake();
 		}
 		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
 			toggleWing();
