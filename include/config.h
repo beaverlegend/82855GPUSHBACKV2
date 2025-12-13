@@ -33,7 +33,7 @@
 #define DIST_LEFT 13
 #define DIST_RIGHT 14
 
-inline MockIMU imu(IMU, 359.8 / 360.0);
+inline MockIMU imu(IMU, 359.0/ 360.0);
 inline pros::MotorGroup left_mg({LEFT_FRONT_DRIVE, LEFT_MIDDLE_DRIVE, LEFT_BACK_DRIVE}, pros::MotorGearset::blue);
 inline pros::MotorGroup right_mg({RIGHT_FRONT_DRIVE, RIGHT_MIDDLE_DRIVE, RIGHT_BACK_DRIVE}, pros::MotorGearset::blue);
 inline pros::MotorGroup Intake_High_mg({IntakeTopRoller, IntakeLastWheel});

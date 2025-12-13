@@ -144,7 +144,7 @@ lemlib::ControllerSettings lateral_controller(5,   // proportional gain (kP)
 // angular PID controller
 lemlib::ControllerSettings angular_controller(5, // proportional gain (kP)3.2  5.8
 											  0,   // integral gain (kI)
-											  43.5,  // derivative gain (kD)28 39.5
+											  37,  // derivative gain (kD)28 39.5
 											  0,   // anti windup
 											  0,   // small error range, in degrees
 											  0,   // small error range timeout, in milliseconds
@@ -522,62 +522,64 @@ void redBottom(){
 	pros::delay(100);
 	//intake first 3
 	intakeIndex();
-	chassis.moveToPose(-15, -25, 135, 2000, {.lead = 0.1, .maxSpeed = 40});
-	pros::delay(1200);
-	
+	chassis.moveToPose(-15, -26, 135, 2000, {.lead = 0.3, .maxSpeed = 80});
+	pros::delay(700);
 	tonguePress=true;
 	adjustTongue();
 
 	// chassis.moveToPoint(-15, -16, 2000, {.maxSpeed = 40});
 	// intakeStop();
-	pros::delay(1000);
+	pros::delay(750);
 	
 	
 	//score
 	//chassis.turnToHeading(45, 1000);
-	pros::delay(200);
-	chassis.moveToPose(-8.5, -10.5, 45, 2000, {.lead = 0.2, .maxSpeed = 70});
+	chassis.moveToPose(-10.5, -13, 45, 2000, {.lead = 0.2, .maxSpeed = 70});
 	toggleTongue();
 	adjustTongue();	
 	pros::delay(400);
 	intakeStop();
 	pros::delay(800);
-	IntakeReverse();
-	pros::delay(2050);
+	IntakeSlowReverse();
+	pros::delay(2500);
 	// chassis.moveToPose(-3, -10, 45, 1000, {.lead = 0.1, .maxSpeed = 10});
 	// pros::delay(4000);
 	intakeStop();
-	pros::delay(2000);
+	pros::delay(500);
 
 	// back
-	chassis.moveToPoint(-48, -52, 1000, {.forwards = false, .maxSpeed = 80});
+	chassis.moveToPoint(-43, -47, 1000, {.forwards = false, .maxSpeed = 80});
 	pros::delay(1000);
 	chassis.turnToHeading(270, 1000);
-	pros::delay(120000); //super long delay because I need to fix everything before this
+	pros::delay(1000); //super long delay because I need to fix everything before this
 	tonguePress = true;
 	adjustTongue();
 	pros::delay(500);
 	intakeHighgoal();
-	chassis.moveToPose(-72, -52, 280, 3000, {.forwards = true, .maxSpeed = 60});
-	pros::delay(3000);
-	intakeStop();
+	chassis.moveToPoint(-66, -47, 1020, {.forwards = true, .maxSpeed = 65});
 	pros::delay(500);
-	IntakeReverse();
+	intakeStop();
 	pros::delay(200);
-	intakeStop();
-	pros::delay(500);
-	chassis.moveToPoint(-14, -52, 2000, {.forwards = false, .maxSpeed = 60});
+	intakeIndex();
+	intakeLift = true;
+	chassis.moveToPoint(-14, -47, 2000, {.forwards = false, .maxSpeed = 60});
 	wingLift = false;
 	adjustWing();
+	adjustIntake();
+	pros::delay(1000);
 	intakeHighgoal();
 	
 
 	//matchload
 }
 
+void justinsawp(){
+	
+}
+
 void autonomous() {
 	chassis.setPose(0, 0, 0);
-	// pidTurnTune();
+	//pidTurnTune();
 	redBottom();
 }
 
