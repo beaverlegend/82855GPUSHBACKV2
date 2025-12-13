@@ -573,9 +573,6 @@ void redBottom(){
 	
 
 	//matchload
-
-
-
 }
 
 void autonomous() {
